@@ -14,13 +14,29 @@
     <p>Upload a photo and apply the dreamy, artistic filter.</p>
     <form method="post" enctype="multipart/form-data">
         <input type="file" name="file" multiple required>
-        <label>
-            <input type="checkbox" name="grain_effect"> Add Film Grain
-        </label>
-        <label>
-            <input type="checkbox" name="sun_traces_effect"> Add Sun Traces
-        </label>
-        <br>
+        <div style="margin:20px 0; text-align:left; display:inline-block;">
+            <label>Preset:
+                <select name="preset" onchange="this.form.submit()">
+                    {% for name in presets.keys() %}
+                        <option value="{{ name }}" {% if name == selected_preset %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </label><br>
+            <label>Warm Tone (R): <input type="range" name="warm_r" min="1.0" max="2.0" step="0.01" value="{{ preset_values['warm_r'] }}" oninput="warm_r_val.value = this.value"><output id="warm_r_val">{{ preset_values['warm_r'] }}</output></label><br>
+            <label>Warm Tone (G): <input type="range" name="warm_g" min="1.0" max="2.0" step="0.01" value="{{ preset_values['warm_g'] }}" oninput="warm_g_val.value = this.value"><output id="warm_g_val">{{ preset_values['warm_g'] }}</output></label><br>
+            <label>Glow Strength: <input type="range" name="glow_strength" min="0" max="1" step="0.01" value="{{ preset_values['glow_strength'] }}" oninput="glow_strength_val.value = this.value"><output id="glow_strength_val">{{ preset_values['glow_strength'] }}</output></label><br>
+            <label>Glow Blur Radius: <input type="range" name="glow_blur" min="1" max="50" step="1" value="{{ preset_values['glow_blur'] }}" oninput="glow_blur_val.value = this.value"><output id="glow_blur_val">{{ preset_values['glow_blur'] }}</output></label><br>
+            <label>Brightness: <input type="range" name="brightness" min="0.5" max="2.0" step="0.01" value="{{ preset_values['brightness'] }}" oninput="brightness_val.value = this.value"><output id="brightness_val">{{ preset_values['brightness'] }}</output></label><br>
+            <label>Contrast: <input type="range" name="contrast" min="0.5" max="2.0" step="0.01" value="{{ preset_values['contrast'] }}" oninput="contrast_val.value = this.value"><output id="contrast_val">{{ preset_values['contrast'] }}</output></label><br>
+            <label>Color: <input type="range" name="color" min="0.5" max="2.0" step="0.01" value="{{ preset_values['color'] }}" oninput="color_val.value = this.value"><output id="color_val">{{ preset_values['color'] }}</output></label><br>
+            <label>Film Grain Strength: <input type="range" name="grain_strength" min="0" max="50" step="1" value="{{ preset_values['grain_strength'] }}" oninput="grain_strength_val.value = this.value"><output id="grain_strength_val">{{ preset_values['grain_strength'] }}</output></label>
+            <input type="checkbox" name="grain_effect" {% if preset_values['grain_effect'] %}checked{% endif %}> Enable Film Grain<br>
+            <label>Sun Traces: <input type="checkbox" name="sun_traces_effect" {% if preset_values['sun_traces_effect'] %}checked{% endif %}> Enable Sun Traces</label><br>
+        </div>
+        <div style="margin-bottom:20px;">
+            <input type="text" name="preset_name" placeholder="Preset name">
+            <button type="submit" name="save_preset" value="1">Save Preset</button>
+        </div>
         <input type="submit" value="Edit Photo">
     </form>
     {% if show_progress %}

@@ -1,0 +1,26 @@
+{
+  "base": {
+    "warm_r": 1.1,
+    "warm_g": 1.05,
+    "glow_strength": 0.6,
+    "glow_blur": 10,
+    "brightness": 1.1,
+    "contrast": 1.05,
+    "color": 1.2,
+    "grain_strength": 15,
+    "grain_effect": true,
+    "sun_traces_effect": true
+  },
+  "dreamy look": {
+    "warm_r": 1.1,
+    "warm_g": 1.05,
+    "glow_strength": 0.6,
+    "glow_blur": 10,
+    "brightness": 1.1,
+    "contrast": 1.05,
+    "color": 1.2,
+    "grain_strength": 15,
+    "grain_effect": true,
+    "sun_traces_effect": true
+  }
+}
