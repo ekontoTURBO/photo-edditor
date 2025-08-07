@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <title>Photo Editor App</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        form { display: inline-block; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        input[type="file"] { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>My Dreamy Photo Editor</h1>
+    <p>Upload a photo and apply the dreamy, artistic filter.</p>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" multiple required>
+        <label>
+            <input type="checkbox" name="grain_effect"> Add Film Grain
+        </label>
+        <label>
+            <input type="checkbox" name="sun_traces_effect"> Add Sun Traces
+        </label>
+        <br>
+        <input type="submit" value="Edit Photo">
+    </form>
+    {% if show_progress %}
+    <div class="progress" style="margin-top:40px;">
+        <h2>Bulk Edit Progress</h2>
+        {% for step in progress_steps %}
+            <div class="step">{{ step }}</div>
+        {% endfor %}
+        <form action="/uploads/edited_photos.zip" method="get">
+            <button class="download-btn" type="submit">Download ZIP</button>
+        </form>
+    </div>
+    {% endif %}
+</body>
+</html>

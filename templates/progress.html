@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+    <title>Bulk Edit Progress</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        .progress { margin: 20px auto; display: inline-block; text-align: left; }
+        .step { margin-bottom: 8px; }
+        .download-btn { margin-top: 30px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Bulk Edit Progress</h1>
+    <div class="progress">
+        {% for step in progress_steps %}
+            <div class="step">{{ step }}</div>
+        {% endfor %}
+    </div>
+    <form action="/" method="get">
+        <button class="download-btn" type="submit">Download ZIP</button>
+    </form>
+</body>
+</html>
