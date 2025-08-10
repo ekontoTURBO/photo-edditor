@@ -4,7 +4,6 @@ from presets import load_presets, save_presets, BASE_PRESET
 from zipfile import ZipFile
 import tempfile
 from PIL import Image, ImageEnhance, ImageFilter, ImageChops, ImageDraw
-import numpy as np
 import io
 import os
 
