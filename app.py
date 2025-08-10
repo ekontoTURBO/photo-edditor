@@ -105,20 +105,21 @@ def upload_file():
             return redirect(request.url)
 
         # Get slider values or preset
-    warmth_factor = float(request.form.get('warmth_factor', preset_values.get('warmth_factor', 1.08)))
-    warm_r = float(request.form.get('warm_r', preset_values['warm_r']))
-    warm_g = float(request.form.get('warm_g', preset_values['warm_g']))
-    glow_strength = float(request.form.get('glow_strength', preset_values['glow_strength']))
-    glow_blur = int(request.form.get('glow_blur', preset_values['glow_blur']))
-    brightness = float(request.form.get('brightness', preset_values['brightness']))
-    contrast = float(request.form.get('contrast', preset_values['contrast']))
-    vibrance = float(request.form.get('vibrance', preset_values.get('vibrance', 1.10)))
-    color = float(request.form.get('color', preset_values['color']))
-    grain_strength = int(request.form.get('grain_strength', preset_values['grain_strength']))
-    sharpness = float(request.form.get('sharpness', preset_values.get('sharpness', 1.3)))
-    sun_traces = int(request.form.get('sun_traces', preset_values.get('sun_traces', 0)))
-    add_grain = request.form.get('grain_effect')
-    add_sun_traces_effect = request.form.get('sun_traces_effect')
+
+        warmth_factor = float(request.form.get('warmth_factor', preset_values.get('warmth_factor', 1.08)))
+        warm_r = float(request.form.get('warm_r', preset_values['warm_r']))
+        warm_g = float(request.form.get('warm_g', preset_values['warm_g']))
+        glow_strength = float(request.form.get('glow_strength', preset_values['glow_strength']))
+        glow_blur = int(request.form.get('glow_blur', preset_values['glow_blur']))
+        brightness = float(request.form.get('brightness', preset_values['brightness']))
+        contrast = float(request.form.get('contrast', preset_values['contrast']))
+        vibrance = float(request.form.get('vibrance', preset_values.get('vibrance', 1.10)))
+        color = float(request.form.get('color', preset_values['color']))
+        grain_strength = int(request.form.get('grain_strength', preset_values['grain_strength']))
+        sharpness = float(request.form.get('sharpness', preset_values.get('sharpness', 1.3)))
+        sun_traces = int(request.form.get('sun_traces', preset_values.get('sun_traces', 0)))
+        add_grain = request.form.get('grain_effect')
+        add_sun_traces_effect = request.form.get('sun_traces_effect')
 
         # Save preset if requested
         if request.form.get('save_preset'):
