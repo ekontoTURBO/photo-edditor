@@ -116,8 +116,8 @@ def upload_file():
         grain_strength = int(request.form.get('grain_strength', preset_values['grain_strength']))
         sharpness = float(request.form.get('sharpness', preset_values.get('sharpness', 1.3)))
         sun_traces = int(request.form.get('sun_traces', preset_values.get('sun_traces', 0)))
-        add_grain = request.form.get('grain_effect')
-        add_sun_traces_effect = request.form.get('sun_traces_effect')
+        add_grain = 'grain_effect' in request.form
+        add_sun_traces_effect = 'sun_traces_effect' in request.form
 
         # Save preset if requested
         if request.form.get('save_preset'):
@@ -136,8 +136,8 @@ def upload_file():
                     "grain_strength": grain_strength,
                     "sharpness": sharpness,
                     "sun_traces": sun_traces,
-                    "grain_effect": bool(add_grain),
-                    "sun_traces_effect": bool(add_sun_traces_effect)
+                    "grain_effect": add_grain,
+                    "sun_traces_effect": add_sun_traces_effect
                 }
                 save_presets(presets)
 
@@ -167,8 +167,8 @@ def upload_file():
                         'contrast': contrast,
                         'vibrance': vibrance,
                         'color': color,
-                        'grain_strength': grain_strength,
-                        'sun_traces': sun_traces,
+                        'grain_strength': grain_strength if add_grain else 0,
+                        'sun_traces': sun_traces if add_sun_traces_effect else 0,
                         'sharpness': sharpness
                     }
                     final_image = edit_image(image, params)
