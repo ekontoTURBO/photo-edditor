@@ -16,21 +16,49 @@ def save_presets(presets):
         json.dump(presets, f, indent=2)
 
 # Get default/base preset
+
 BASE_PRESET = {
-    "warm_r": 1.1,
-    "warm_g": 1.05,
-    "glow_strength": 0.6,
-    "glow_blur": 10,
-    "brightness": 1.1,
-    "contrast": 1.05,
-    "color": 1.2,
-    "grain_strength": 15,
-    "grain_effect": True,
-    "sun_traces_effect": True
+    "warmth_factor": 1.08,
+    "warm_r": 1.08,
+    "warm_g": 0.97,
+    "glow_strength": 0.15,
+    "glow_blur": 8,
+    "brightness": 1.05,
+    "contrast": 1.12,
+    "vibrance": 1.10,
+    "color": 1.0,
+    "grain_strength": 0,
+    "sharpness": 1.3,
+    "sun_traces": 0,
+    "grain_effect": False,
+    "sun_traces_effect": False
+}
+
+CHATGPT_TEMPLATE = {
+    "warmth_factor": 1.08,
+    "warm_r": 1.08,
+    "warm_g": 0.97,
+    "glow_strength": 0.15,
+    "glow_blur": 8,
+    "brightness": 1.05,
+    "contrast": 1.12,
+    "vibrance": 1.10,
+    "color": 1.0,
+    "grain_strength": 0,
+    "sharpness": 1.3,
+    "sun_traces": 0,
+    "grain_effect": False,
+    "sun_traces_effect": False
 }
 
 # On first run, save base preset if not present
 presets = load_presets()
+changed = False
 if "base" not in presets:
     presets["base"] = BASE_PRESET
+    changed = True
+if "chatgpt_template" not in presets:
+    presets["chatgpt_template"] = CHATGPT_TEMPLATE
+    changed = True
+if changed:
     save_presets(presets)

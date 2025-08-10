@@ -16,21 +16,54 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 # --- Image Editing Functions ---
-def apply_warm_tone(image, r_factor=1.1, g_factor=1.05):
-    r, g, b = image.split()
-    r = r.point(lambda i: i * r_factor)
-    g = g.point(lambda i: i * g_factor)
-    return Image.merge('RGB', (r, g, b))
+def apply_warmth(img, warmth_factor=1.08, warm_r=None, warm_g=None):
+    arr = np.array(img).astype(np.float32)
+    r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
+    if warm_r is not None and warm_g is not None:
+        r = np.clip(r * warm_r, 0, 255)
+        g = np.clip(g * warm_g, 0, 255)
+    else:
+        r = np.clip(r * warmth_factor, 0, 255)
+        g = np.clip(g * (1 - (warmth_factor - 1) / 3), 0, 255)
+    warmed = np.stack([r, g, b], axis=2).astype(np.uint8)
+    return Image.fromarray(warmed)
 
 def add_soft_glow(image, strength=0.6, blur_radius=10):
     blurred = image.filter(ImageFilter.GaussianBlur(radius=blur_radius))
     return Image.blend(image, blurred, strength)
 
-def enhance_image(image, brightness_factor=1.1, contrast_factor=1.05, color_factor=1.2):
-    brightness = ImageEnhance.Brightness(image).enhance(brightness_factor)
-    contrast = ImageEnhance.Contrast(brightness).enhance(contrast_factor)
-    color = ImageEnhance.Color(contrast).enhance(color_factor)
-    return color
+def edit_image(image, params):
+    # Warmth
+    image = apply_warmth(
+        image,
+        warmth_factor=params.get('warmth_factor', 1.08),
+        warm_r=params.get('warm_r'),
+        warm_g=params.get('warm_g')
+    )
+    # Glow
+    if params.get('glow_strength', 0) > 0:
+        glow = image.filter(ImageFilter.GaussianBlur(radius=params.get('glow_blur', 8)))
+        image = Image.blend(image, glow, alpha=params.get('glow_strength', 0.15))
+    # Brightness
+    image = ImageEnhance.Brightness(image).enhance(params.get('brightness', 1.05))
+    # Contrast
+    image = ImageEnhance.Contrast(image).enhance(params.get('contrast', 1.12))
+    # Vibrance/Saturation
+    vibrance = params.get('vibrance', 1.10)
+    image = ImageEnhance.Color(image).enhance(vibrance)
+    # Color (legacy, for compatibility)
+    image = ImageEnhance.Color(image).enhance(params.get('color', 1.0))
+    # Grain
+    if params.get('grain_strength', 0) > 0:
+        image = add_film_grain(image, params.get('grain_strength', 0))
+    # Sun Traces
+    if params.get('sun_traces', 0) > 0:
+        image = add_sun_traces(image, params.get('sun_traces', 0))
+    # Sharpness
+    sharpness = params.get('sharpness', 1.3)
+    if sharpness > 0:
+        image = image.filter(ImageFilter.UnsharpMask(radius=2, percent=int(sharpness*100), threshold=3))
+    return image
 
 def add_film_grain(image, grain_strength=15):
     width, height = image.size
@@ -72,30 +105,38 @@ def upload_file():
             return redirect(request.url)
 
         # Get slider values or preset
-        warm_r = float(request.form.get('warm_r', preset_values['warm_r']))
-        warm_g = float(request.form.get('warm_g', preset_values['warm_g']))
-        glow_strength = float(request.form.get('glow_strength', preset_values['glow_strength']))
-        glow_blur = int(request.form.get('glow_blur', preset_values['glow_blur']))
-        brightness = float(request.form.get('brightness', preset_values['brightness']))
-        contrast = float(request.form.get('contrast', preset_values['contrast']))
-        color = float(request.form.get('color', preset_values['color']))
-        grain_strength = int(request.form.get('grain_strength', preset_values['grain_strength']))
-        add_grain = request.form.get('grain_effect')
-        add_sun_traces_effect = request.form.get('sun_traces_effect')
+    warmth_factor = float(request.form.get('warmth_factor', preset_values.get('warmth_factor', 1.08)))
+    warm_r = float(request.form.get('warm_r', preset_values['warm_r']))
+    warm_g = float(request.form.get('warm_g', preset_values['warm_g']))
+    glow_strength = float(request.form.get('glow_strength', preset_values['glow_strength']))
+    glow_blur = int(request.form.get('glow_blur', preset_values['glow_blur']))
+    brightness = float(request.form.get('brightness', preset_values['brightness']))
+    contrast = float(request.form.get('contrast', preset_values['contrast']))
+    vibrance = float(request.form.get('vibrance', preset_values.get('vibrance', 1.10)))
+    color = float(request.form.get('color', preset_values['color']))
+    grain_strength = int(request.form.get('grain_strength', preset_values['grain_strength']))
+    sharpness = float(request.form.get('sharpness', preset_values.get('sharpness', 1.3)))
+    sun_traces = int(request.form.get('sun_traces', preset_values.get('sun_traces', 0)))
+    add_grain = request.form.get('grain_effect')
+    add_sun_traces_effect = request.form.get('sun_traces_effect')
 
         # Save preset if requested
         if request.form.get('save_preset'):
             new_preset_name = request.form.get('preset_name', '').strip()
             if new_preset_name:
                 presets[new_preset_name] = {
+                    "warmth_factor": warmth_factor,
                     "warm_r": warm_r,
                     "warm_g": warm_g,
                     "glow_strength": glow_strength,
                     "glow_blur": glow_blur,
                     "brightness": brightness,
                     "contrast": contrast,
+                    "vibrance": vibrance,
                     "color": color,
                     "grain_strength": grain_strength,
+                    "sharpness": sharpness,
+                    "sun_traces": sun_traces,
                     "grain_effect": bool(add_grain),
                     "sun_traces_effect": bool(add_sun_traces_effect)
                 }
@@ -117,13 +158,21 @@ def upload_file():
                     img_stream = io.BytesIO(file.read())
                     image = Image.open(img_stream).convert('RGB')
                     # Use custom parameters
-                    warm_image = apply_warm_tone(image, warm_r, warm_g)
-                    glow_image = add_soft_glow(warm_image, glow_strength, glow_blur)
-                    final_image = enhance_image(glow_image, brightness, contrast, color)
-                    if add_grain:
-                        final_image = add_film_grain(final_image, grain_strength)
-                    if add_sun_traces_effect:
-                        final_image = add_sun_traces(final_image)
+                    params = {
+                        'warmth_factor': warmth_factor,
+                        'warm_r': warm_r,
+                        'warm_g': warm_g,
+                        'glow_strength': glow_strength,
+                        'glow_blur': glow_blur,
+                        'brightness': brightness,
+                        'contrast': contrast,
+                        'vibrance': vibrance,
+                        'color': color,
+                        'grain_strength': grain_strength,
+                        'sun_traces': sun_traces,
+                        'sharpness': sharpness
+                    }
+                    final_image = edit_image(image, params)
                     out_path = os.path.join(zip_folder, f'edited_{file.filename}')
                     final_image.save(out_path, format='JPEG')
                     zipf.write(out_path, arcname=f'edited_{file.filename}')
