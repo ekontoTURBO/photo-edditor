@@ -18,16 +18,14 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 # --- Image Editing Functions ---
 def apply_warmth(img, warmth_factor=1.08, warm_r=None, warm_g=None):
-    arr = np.array(img).astype(np.float32)
-    r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
+    r, g, b = img.split()
     if warm_r is not None and warm_g is not None:
-        r = np.clip(r * warm_r, 0, 255)
-        g = np.clip(g * warm_g, 0, 255)
+        r = r.point(lambda i: min(255, max(0, i * warm_r)))
+        g = g.point(lambda i: min(255, max(0, i * warm_g)))
     else:
-        r = np.clip(r * warmth_factor, 0, 255)
-        g = np.clip(g * (1 - (warmth_factor - 1) / 3), 0, 255)
-    warmed = np.stack([r, g, b], axis=2).astype(np.uint8)
-    return Image.fromarray(warmed)
+        r = r.point(lambda i: min(255, max(0, i * warmth_factor)))
+        g = g.point(lambda i: min(255, max(0, i * (1 - (warmth_factor - 1) / 3))))
+    return Image.merge('RGB', (r, g, b))
 
 def add_soft_glow(image, strength=0.6, blur_radius=10):
     blurred = image.filter(ImageFilter.GaussianBlur(radius=blur_radius))
