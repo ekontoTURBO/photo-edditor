@@ -22,5 +22,21 @@
     "grain_strength": 15,
     "grain_effect": true,
     "sun_traces_effect": true
+  },
+  "chatgpt_template": {
+    "warmth_factor": 1.08,
+    "warm_r": 1.08,
+    "warm_g": 0.97,
+    "glow_strength": 0.15,
+    "glow_blur": 8,
+    "brightness": 1.05,
+    "contrast": 1.12,
+    "vibrance": 1.1,
+    "color": 1.0,
+    "grain_strength": 0,
+    "sharpness": 1.3,
+    "sun_traces": 0,
+    "grain_effect": false,
+    "sun_traces_effect": false
   }
 }

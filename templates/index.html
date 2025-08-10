@@ -16,7 +16,7 @@
         <input type="file" name="file" multiple required>
         <div style="margin:20px 0; text-align:left; display:inline-block;">
             <label>Preset:
-                <select name="preset" onchange="this.form.submit()">
+                <select name="preset">
                     {% for name in presets.keys() %}
                         <option value="{{ name }}" {% if name == selected_preset %}selected{% endif %}>{{ name }}</option>
                     {% endfor %}

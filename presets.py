@@ -18,17 +18,17 @@ def save_presets(presets):
 # Get default/base preset
 
 BASE_PRESET = {
-    "warmth_factor": 1.08,
-    "warm_r": 1.08,
-    "warm_g": 0.97,
-    "glow_strength": 0.15,
+    "warmth_factor": 1.0,
+    "warm_r": 1.0,
+    "warm_g": 1.0,
+    "glow_strength": 0.0,
     "glow_blur": 8,
-    "brightness": 1.05,
-    "contrast": 1.12,
-    "vibrance": 1.10,
+    "brightness": 1.0,
+    "contrast": 1.0,
+    "vibrance": 1.0,
     "color": 1.0,
     "grain_strength": 0,
-    "sharpness": 1.3,
+    "sharpness": 0.0,
     "sun_traces": 0,
     "grain_effect": False,
     "sun_traces_effect": False
